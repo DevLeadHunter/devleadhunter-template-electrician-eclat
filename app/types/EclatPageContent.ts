@@ -30,6 +30,7 @@ export type EclatHero = {
 
 export type EclatGoogleRating = {
   value: string
+  filledStars: number
   reviewsCount: string
 }
 

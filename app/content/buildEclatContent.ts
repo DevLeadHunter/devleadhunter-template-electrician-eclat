@@ -106,6 +106,7 @@ function buildGoogleRating(content: EclatSiteContentInput): EclatGoogleRating | 
   const reviewsCount: number | null | undefined = content.reviewsCount
   return {
     value: formatRating(rating),
+    filledStars: Math.round(rating),
     reviewsCount: typeof reviewsCount === 'number' && reviewsCount > 0 ? String(reviewsCount) : '',
   }
 }

@@ -22,7 +22,7 @@
           class="eclat-reviews__score">
           <strong>{{ page.googleRating.value }}</strong>
           <span>
-            <StarRating :rating="5" />
+            <StarRating :rating="page.googleRating.filledStars" />
             <span>{{ ratingSource }}</span>
           </span>
         </div>

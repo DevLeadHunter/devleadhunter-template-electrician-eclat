@@ -17,7 +17,8 @@
       </div>
       <div
         v-eclat-reveal
-        class="eclat-gallery__controls">
+        class="eclat-gallery__controls"
+        :class="{ 'eclat-gallery__controls--idle': !canScrollBackward && !canScrollForward }">
         <button
           type="button"
           aria-label="Photos précédentes"
@@ -38,6 +39,7 @@
       ref="photoTrackElement"
       v-eclat-reveal
       class="eclat-gallery__track"
+      :class="{ 'eclat-gallery__track--few': page.gallery.photos.length < FULL_ROW_PHOTO_COUNT }"
       tabindex="0"
       role="group"
       aria-label="Photos des réalisations"
@@ -63,6 +65,7 @@ import { useEclatPage } from '../../content/eclatPage'
 import { vEclatReveal } from '../../directives/vEclatReveal'
 import SvgIcon from '../parts/SvgIcon.vue'
 
+const FULL_ROW_PHOTO_COUNT: number = 4
 const SCROLL_EDGE_TOLERANCE: number = 4
 const SCROLLED_SHARE_OF_TRACK: number = 0.8
 
@@ -127,6 +130,10 @@ onBeforeUnmount((): void => {
   gap: 10px;
 }
 
+.eclat-gallery__controls--idle {
+  visibility: hidden;
+}
+
 .eclat-gallery__controls button {
   display: grid;
   place-items: center;
@@ -180,6 +187,12 @@ onBeforeUnmount((): void => {
   border-radius: 24px;
   background: var(--eclat-band);
   scroll-snap-align: start;
+}
+
+.eclat-gallery__track--few .eclat-gallery__photo {
+  flex: 1 1 0;
+  width: auto;
+  max-width: 400px;
 }
 
 .eclat-gallery__photo img {

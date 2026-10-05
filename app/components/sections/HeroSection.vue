@@ -47,7 +47,7 @@
         class="eclat-notch eclat-hero__rating">
         <strong>{{ page.googleRating.value }}</strong>
         <span>
-          <StarRating :rating="5" />
+          <StarRating :rating="page.googleRating.filledStars" />
           <span class="eclat-hero__rating-source">{{ ratingSource }}</span>
         </span>
       </div>
