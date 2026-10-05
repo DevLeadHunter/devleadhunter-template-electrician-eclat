@@ -1,22 +1,322 @@
 @import 'tailwindcss';
 
 /*
- * Scan the layer's components/composables so Tailwind v4 generates their utility classes
- * when this template is consumed by demo-host via `extends` (from the giget/npm cache).
+ * Scan the layer's components so Tailwind v4 generates their utility classes when this
+ * template is consumed by demo-host via `extends` (from the giget/npm cache).
  * Path: app/assets/css/ → app/
  */
 @source '../../**/*.{vue,ts}';
 
-/*
- * Neutral placeholder design tokens. This is what makes each template look different —
- * replace the font and colors with your template's own art direction (DA).
- */
-@theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+/* Le défilement doux ne s'applique qu'aux pages qui rendent cette template. */
+:root:has(.eclat) {
+  scroll-behavior: smooth;
+}
 
-  --color-brand: #2f6df0;
-  --color-brand-soft: #5b8ef5;
-  --color-surface: #ffffff;
-  --color-ink: #0f172a;
-  --color-muted: #64748b;
+.eclat {
+  --eclat-page: #ffffff;
+  --eclat-band: #f4f5f7;
+  --eclat-ink: #0b1b2e;
+  --eclat-ink-hover: #1a3350;
+  --eclat-body: #2b3645;
+  --eclat-muted: #667185;
+  --eclat-line: #e3e7ed;
+  --eclat-line-strong: #cfd5de;
+  --eclat-night: #0b1b2e;
+  --eclat-night-line: rgba(255, 255, 255, 0.13);
+  --eclat-night-muted: #a7b3c4;
+  --eclat-accent: #f59e0b;
+  --eclat-accent-large: #d97706;
+  --eclat-accent-ink: #b45309;
+  --eclat-accent-soft: #fef1d8;
+  --eclat-star: #f5a623;
+  --eclat-font: 'Schibsted Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --eclat-shell: min(1240px, 100% - 48px);
+  --eclat-gutter: max(24px, calc((100% - 1240px) / 2));
+  --eclat-notch: 28px;
+  --eclat-notch-bg: var(--eclat-page);
+  --eclat-header-height: 80px;
+
+  position: relative;
+  overflow-x: clip;
+  background: var(--eclat-page);
+  color: var(--eclat-body);
+  font-family: var(--eclat-font);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.eclat ::selection {
+  background: var(--eclat-accent-soft);
+}
+
+.eclat :focus-visible {
+  outline: 2px solid var(--eclat-accent-large);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.eclat img {
+  display: block;
+  max-width: 100%;
+}
+
+.eclat-shell {
+  width: var(--eclat-shell);
+  margin-inline: auto;
+}
+
+.eclat-section {
+  position: relative;
+  padding: 124px 0;
+  scroll-margin-top: var(--eclat-header-height);
+}
+
+.eclat-section--band {
+  --eclat-notch-bg: var(--eclat-band);
+  background: var(--eclat-band);
+}
+
+.eclat-section--night {
+  background: var(--eclat-night);
+  color: var(--eclat-night-muted);
+}
+
+.eclat-eyebrow {
+  display: block;
+  color: var(--eclat-accent-ink);
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eclat-section--night .eclat-eyebrow {
+  color: var(--eclat-accent);
+}
+
+.eclat-title {
+  margin-top: 14px;
+  color: var(--eclat-ink);
+  font-size: 46px;
+  font-weight: 650;
+  line-height: 1.08;
+  letter-spacing: -0.026em;
+  text-wrap: balance;
+}
+
+.eclat-section--night .eclat-title {
+  color: #ffffff;
+}
+
+.eclat-lead {
+  font-size: 18.5px;
+  line-height: 1.6;
+}
+
+.eclat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 26px;
+  border: 1.5px solid var(--eclat-ink);
+  border-radius: 12px;
+  background: var(--eclat-ink);
+  color: #ffffff;
+  font-family: var(--eclat-font);
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.eclat-btn:hover {
+  border-color: var(--eclat-ink-hover);
+  background: var(--eclat-ink-hover);
+}
+
+.eclat-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.eclat-btn--ghost {
+  border-color: var(--eclat-line-strong);
+  background: transparent;
+  color: var(--eclat-ink);
+}
+
+.eclat-btn--ghost:hover {
+  border-color: var(--eclat-ink);
+  background: transparent;
+}
+
+.eclat-btn--ghost svg {
+  color: var(--eclat-accent-ink);
+}
+
+.eclat-btn--light {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: var(--eclat-ink);
+}
+
+.eclat-btn--light:hover {
+  border-color: var(--eclat-accent-soft);
+  background: var(--eclat-accent-soft);
+}
+
+.eclat-tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: var(--eclat-accent-soft);
+  color: var(--eclat-accent-ink);
+}
+
+.eclat-tile svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Encoche : un coin de photo découpé, avec des angles rentrants. */
+.eclat-notch {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 28px 2px 2px;
+  border-top-right-radius: var(--eclat-notch);
+  background: var(--eclat-notch-bg);
+}
+
+.eclat-notch::before,
+.eclat-notch::after {
+  position: absolute;
+  width: var(--eclat-notch);
+  height: var(--eclat-notch);
+  background: radial-gradient(
+    circle at 100% 0,
+    transparent calc(var(--eclat-notch) - 0.6px),
+    var(--eclat-notch-bg) var(--eclat-notch)
+  );
+  content: '';
+}
+
+.eclat-notch::before {
+  top: calc(var(--eclat-notch) * -1);
+  left: 0;
+}
+
+.eclat-notch::after {
+  bottom: 0;
+  left: 100%;
+}
+
+.eclat-notch--right {
+  right: 0;
+  left: auto;
+  padding: 20px 2px 2px 28px;
+  border-radius: var(--eclat-notch) 0 0 0;
+}
+
+.eclat-notch--right::before,
+.eclat-notch--right::after {
+  background: radial-gradient(
+    circle at 0 0,
+    transparent calc(var(--eclat-notch) - 0.6px),
+    var(--eclat-notch-bg) var(--eclat-notch)
+  );
+}
+
+.eclat-notch--right::before {
+  right: 0;
+  left: auto;
+}
+
+.eclat-notch--right::after {
+  right: 100%;
+  left: auto;
+}
+
+.eclat-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--eclat-reveal-delay, 0ms);
+}
+
+.eclat-reveal.eclat-reveal--in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 1040px) {
+  .eclat-section {
+    padding: 88px 0;
+  }
+
+  .eclat-title {
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 640px) {
+  .eclat {
+    --eclat-shell: min(1240px, 100% - 36px);
+    --eclat-gutter: 18px;
+    --eclat-notch: 22px;
+    --eclat-header-height: 66px;
+
+    font-size: 16.5px;
+  }
+
+  .eclat-section {
+    padding: 68px 0;
+  }
+
+  .eclat-title {
+    font-size: 31px;
+  }
+
+  .eclat-lead {
+    font-size: 17.5px;
+  }
+
+  .eclat-notch {
+    gap: 12px;
+    padding: 14px 18px 2px 0;
+  }
+
+  .eclat-notch--right {
+    padding: 14px 0 2px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:has(.eclat) {
+    scroll-behavior: auto;
+  }
+
+  .eclat-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

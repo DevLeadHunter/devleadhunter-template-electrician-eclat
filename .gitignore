@@ -26,3 +26,6 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Contenus locaux de test du playground (jamais versionnés)
+.playground/public/fixtures/

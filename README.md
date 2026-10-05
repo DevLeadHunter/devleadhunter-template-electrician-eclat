@@ -1,87 +1,63 @@
-# devleadhunter-website-template-starter
+# devleadhunter-template-electrician-eclat
 
-GitHub **Template Repository** to scaffold a new DevLeadHunter website template — a
-self-contained **Nuxt 4 layer** (Tailwind v4, strict TypeScript) that renders a typed
-`SiteContent` into an artisan site and is consumed by `demo-host` via `extends`.
+Template de site vitrine pour électricien, « Électricien Éclat » (`template_id` : `electrician-eclat`).
+C'est une **layer Nuxt 4** consommée par `demo-host` via `extends` : elle reçoit un `SiteContent`
+typé et rend le site. Elle ne connaît ni Storyblok, ni PostHog, ni la base.
 
-> Architecture reference: `TEMPLATES_ARCHITECTURE.md` in the main `devleadhunter` repo.
-> A template knows **nothing** about the tunnel (Storyblok, PostHog, slugs, DB). It receives
-> `content` and renders a site. That's it.
+> Architecture : `docs/TEMPLATES_ARCHITECTURE.md` dans le dépôt `devleadhunter`.
 
-## Create a new template
+## Direction
 
-1. Click **“Use this template”** → name the repo `devleadhunter-template-<id>`
-   (e.g. `devleadhunter-template-plumber-cuivre`).
-2. `npm install`
-3. `npm run dev` → open the `.playground` and build your design.
-4. Rename `app/components/DevLeadHunterStarterRoot.vue` → `<TemplateId>Root.vue`
-   (a unique root name per template) and update the import in `.playground/app/app.vue`.
-5. Build your sections in `app/components/sections/`, tune the DA in
-   `app/assets/css/template.css`, and set your fonts in the root component's `useHead`.
-6. `npm run lint` must pass, then tag `v1.0.0`.
+Fond blanc, bleu nuit pour les boutons et les bandes sombres, une couleur d'accent posée par
+touches. L'accent vient de `palette.primary` (la couleur du logo du prospect) ; il ne porte jamais de
+texte tel quel : `app/content/eclatAccentShades.ts` en tire une nuance lisible pour chaque fond.
+Aucun texte n'est posé sur une photo, et les cadres ont des proportions fixes : une photo de chantier
+prise au téléphone y rend bien.
 
-## The contract (only 3 coupling points)
+## Sections et clés de contenu
 
-1. **`template_id`** — the id in the repo name, the demo-host dispatch and the Python builder.
-2. **`SiteContent`** — the typed props (see `app/types/SiteContent.ts`). Every key is optional;
-   an empty/absent key hides its section.
-3. **`api/services/templates/<id>.py`** — produces a `content_json` conforming to `SiteContent`.
+| Section (fichier dans `app/components/sections/`) | Clés de `SiteContent`                                                                                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HeroSection`                                     | `heroBadge`, `heroTitle`, `subtitle`, `heroImage`, `images.heroSecondary`, `heroPoints`, `ctaQuoteLabel`, `phone`, `city`, `rating`, `reviewsCount` |
+| `TrustStripSection`                               | `trustItems`                                                                                                                                        |
+| `ServicesSection`                                 | `servicesHeading`, `servicesLead`, `services`                                                                                                       |
+| `AboutSection`                                    | `aboutHeading`, `about`, `aboutImage`, `logo`, `city`, `area`                                                                                       |
+| `MethodSection`                                   | `stepsHeading`, `steps`                                                                                                                             |
+| `GallerySection`                                  | `galleryHeading`, `gallery`                                                                                                                         |
+| `ReviewsSection`                                  | `reviewsHeading`, `reviews` (masquée sans texte d'avis)                                                                                             |
+| `FaqSection`                                      | `faqHeading`, `faq`                                                                                                                                 |
+| `CallBannerSection`                               | `ctaTitle`, `ctaLead`, `images.ctaBackground`                                                                                                       |
+| `ContactSection`                                  | `contactHeading`, `contactLead`, `phone`, `email`, `address`, `area`, `openingHours`, `lat`, `lng`                                                  |
+| `SiteFooter`                                      | `social`, licence professionnelle                                                                                                                   |
 
-> `app/types/SiteContent.ts` is a **temporary local copy**. Once the shared
-> `@devleadhunter/website-content` package exists (Phase 2), replace that file's body with a
-> re-export from the package so the type never drifts.
+Chaque clé vide retombe sur un texte ou une photo par défaut (`app/content/eclatDefaults.ts`), ou
+masque son bloc. Le module `api/services/templates/electrician_eclat.py` du dépôt `devleadhunter`
+garde le miroir de ces défauts : les modifier ici impose de les modifier là-bas.
 
-## How demo-host consumes it
+## Comportements à connaître
 
-The template repos are **public**, so demo-host pulls them as Nuxt layers with **no token**:
+- Note Google absente ou inférieure à 3,5 : le coin découpé de la photo d'en-tête montre la ville.
+- Photo d'en-tête de moins de 480 px de large : remplacée par celle de la template.
+- Sans e-mail : pas de formulaire. Le formulaire ouvre un e-mail prérempli (`mailto:`).
+- Sans logo : une pastille à l'éclair le remplace.
 
-```ts
-// demo-host/nuxt.config.ts
-export default defineNuxtConfig({
-  extends: [
-    'github:DevLeadHunter/devleadhunter-template-plumber-cuivre#v1.0.0',
-    // …one line per template, pinned by tag
-  ],
-})
-```
-
-demo-host dispatches `template_id → root component` with `defineAsyncComponent`, so each
-prospect's demo only downloads that template's chunk.
-
-## Collision-free by construction
-
-Only the **root** component is auto-registered globally (unique name per template). Sections
-live in `app/components/sections/` and are **imported relatively** by the root — they are
-ignored from global auto-import (`nuxt.config.ts`), so two templates can both have a
-`HeroSection` without clashing in demo-host's registry.
-
-## Local development
+## Développer
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000 — renders the root with content.ts mock
-npm run lint       # prettier + eslint + vue-tsc
-npm run lint:fix
-npm run build      # builds the .playground in isolation
+npm run dev
 ```
 
-## Structure
+Le `.playground` rend la racine avec un contenu fictif : `?mock=lean` (fiche pauvre, par défaut) ou
+`?mock=rich` (fiche bien remplie). `?fixture=<nom>` charge `.playground/public/fixtures/<nom>.json`,
+un dossier non versionné, pour essayer un vrai contenu en local.
 
-```
-devleadhunter-website-template-starter/
-├── app/
-│   ├── assets/css/template.css              # Tailwind v4 + design tokens (the DA)
-│   ├── components/
-│   │   ├── DevLeadHunterStarterRoot.vue      # THE root — rename per template
-│   │   └── sections/                         # relative-only sections (not global)
-│   └── types/SiteContent.ts                  # content contract (temporary local copy)
-├── .playground/                              # dev/preview app (extends the layer)
-├── content.ts                                # mock SiteContent for the playground
-├── nuxt.config.ts                            # layer config
-└── package.json                              # main: ./nuxt.config.ts
+```bash
+npm run lint
+npx vue-tsc -b --noEmit
 ```
 
-## Conventions
+## Publier
 
-Same code standards as the main repo (TypeScript strict, runtime `defineProps` + `PropType`,
-JSDoc, conventional commits). See `STANDARDS_CODE_ET_ARCHITECTURE.md` in the `devleadhunter` repo.
+Commit, tag `vX.Y.Z`, puis mettre à jour le tag dans `demo-host/nuxt.config.ts` et dans
+`api/services/templates/template_repos.py` du dépôt `devleadhunter`.
