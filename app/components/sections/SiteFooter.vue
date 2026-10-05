@@ -63,9 +63,9 @@
 
 <script lang="ts" setup>
 import type { ComputedRef } from 'vue'
-import { useEclatPage } from '../../content/eclatPage'
 import type { EclatPageContent } from '../../types/EclatPageContent'
 import type { SvgIconName } from '../../types/SvgIcon'
+import { useEclatPage } from '../../content/eclatPage'
 import BrandMark from '../parts/BrandMark.vue'
 import SvgIcon from '../parts/SvgIcon.vue'
 

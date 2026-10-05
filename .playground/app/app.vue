@@ -4,8 +4,8 @@
 
 <script lang="ts" setup>
 import type { ComputedRef, Ref } from 'vue'
-import { computed, onMounted, ref } from 'vue'
 import type { EclatSiteContentInput } from '../../app/types/EclatPageContent'
+import { computed, onMounted, ref } from 'vue'
 import { leanMockSiteContent, richMockSiteContent } from '../../content'
 
 const route: ReturnType<typeof useRoute> = useRoute()

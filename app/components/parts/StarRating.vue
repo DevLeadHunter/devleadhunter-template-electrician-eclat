@@ -14,8 +14,8 @@
 
 <script lang="ts" setup>
 import type { ComputedRef } from 'vue'
-import { computed } from 'vue'
 import type { StarRatingProps } from '../../types/StarRating'
+import { computed } from 'vue'
 import SvgIcon from './SvgIcon.vue'
 
 /**

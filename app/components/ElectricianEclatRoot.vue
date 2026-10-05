@@ -23,13 +23,13 @@
 </template>
 
 <script lang="ts" setup>
-import { editableAttrs } from '@devleadhunter/website-content'
 import type { ComputedRef, PropType } from 'vue'
+import type { ElectricianEclatRootProps } from '../types/ElectricianEclatRoot'
+import type { EclatPageContent, EclatSiteContentInput } from '../types/EclatPageContent'
+import { editableAttrs } from '@devleadhunter/website-content'
 import { computed, provide } from 'vue'
 import { buildEclatContent } from '../content/buildEclatContent'
 import { ECLAT_PAGE_KEY } from '../content/eclatPage'
-import type { ElectricianEclatRootProps } from '../types/ElectricianEclatRoot'
-import type { EclatPageContent, EclatSiteContentInput } from '../types/EclatPageContent'
 import AboutSection from './sections/AboutSection.vue'
 import CallBannerSection from './sections/CallBannerSection.vue'
 import ContactSection from './sections/ContactSection.vue'

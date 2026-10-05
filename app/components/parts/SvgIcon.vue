@@ -17,9 +17,9 @@
 
 <script lang="ts" setup>
 import type { ComputedRef, PropType } from 'vue'
+import type { SvgIconName, SvgIconProps, SvgIconShape } from '../../types/SvgIcon'
 import { computed } from 'vue'
 import { ECLAT_ICON_SHAPES } from '../../content/eclatIcons'
-import type { SvgIconName, SvgIconProps, SvgIconShape } from '../../types/SvgIcon'
 
 /**
  * Icône décorative de la template, dessinée au trait dans la couleur du texte.

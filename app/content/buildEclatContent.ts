@@ -1,4 +1,3 @@
-import { professionalLicenseLine } from '@devleadhunter/website-content'
 import type {
   EclatFact,
   EclatGoogleRating,
@@ -26,6 +25,7 @@ import type {
   SiteContentTrustItem,
 } from '../types/SiteContent'
 import type { SvgIconName } from '../types/SvgIcon'
+import { professionalLicenseLine } from '@devleadhunter/website-content'
 import { eclatAccentShades } from './eclatAccentShades'
 import {
   ECLAT_DEFAULT_COPY,

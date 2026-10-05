@@ -50,10 +50,10 @@
 
 <script lang="ts" setup>
 import type { ComputedRef } from 'vue'
+import type { EclatPageContent } from '../../types/EclatPageContent'
 import { computed } from 'vue'
 import { useEclatPage } from '../../content/eclatPage'
 import { vEclatReveal } from '../../directives/vEclatReveal'
-import type { EclatPageContent } from '../../types/EclatPageContent'
 import StarRating from '../parts/StarRating.vue'
 
 const page: ComputedRef<EclatPageContent> = useEclatPage()

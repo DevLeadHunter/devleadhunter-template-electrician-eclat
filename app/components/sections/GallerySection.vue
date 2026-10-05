@@ -57,10 +57,10 @@
 
 <script lang="ts" setup>
 import type { ComputedRef, Ref } from 'vue'
+import type { EclatPageContent, EclatPhoto } from '../../types/EclatPageContent'
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useEclatPage } from '../../content/eclatPage'
 import { vEclatReveal } from '../../directives/vEclatReveal'
-import type { EclatPageContent, EclatPhoto } from '../../types/EclatPageContent'
 import SvgIcon from '../parts/SvgIcon.vue'
 
 const SCROLL_EDGE_TOLERANCE: number = 4

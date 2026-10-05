@@ -56,10 +56,10 @@
 
 <script lang="ts" setup>
 import type { ComputedRef } from 'vue'
+import type { EclatPageContent } from '../../types/EclatPageContent'
 import { computed } from 'vue'
 import { useEclatPage } from '../../content/eclatPage'
 import { vEclatReveal } from '../../directives/vEclatReveal'
-import type { EclatPageContent } from '../../types/EclatPageContent'
 import BrandMark from '../parts/BrandMark.vue'
 
 const page: ComputedRef<EclatPageContent> = useEclatPage()

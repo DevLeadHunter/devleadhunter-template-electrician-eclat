@@ -1,6 +1,6 @@
 import type { ComputedRef, InjectionKey } from 'vue'
-import { inject } from 'vue'
 import type { EclatPageContent } from '../types/EclatPageContent'
+import { inject } from 'vue'
 
 /** Clé d'injection du contenu de la page, fourni par la racine à toutes les sections. */
 export const ECLAT_PAGE_KEY: InjectionKey<ComputedRef<EclatPageContent>> = Symbol('eclat-page')

@@ -71,10 +71,10 @@
 
 <script lang="ts" setup>
 import type { ComputedRef, Ref } from 'vue'
+import type { EclatPageContent } from '../../types/EclatPageContent'
 import { computed, onMounted, ref } from 'vue'
 import { ECLAT_MINIMUM_HERO_IMAGE_WIDTH } from '../../content/eclatDefaults'
 import { useEclatPage } from '../../content/eclatPage'
-import type { EclatPageContent } from '../../types/EclatPageContent'
 import StarRating from '../parts/StarRating.vue'
 import SvgIcon from '../parts/SvgIcon.vue'
 

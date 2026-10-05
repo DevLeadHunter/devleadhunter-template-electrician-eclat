@@ -22,9 +22,9 @@
 
 <script lang="ts" setup>
 import type { ComputedRef } from 'vue'
+import type { EclatPageContent } from '../../types/EclatPageContent'
 import { useEclatPage } from '../../content/eclatPage'
 import { vEclatReveal } from '../../directives/vEclatReveal'
-import type { EclatPageContent } from '../../types/EclatPageContent'
 import SvgIcon from '../parts/SvgIcon.vue'
 
 const page: ComputedRef<EclatPageContent> = useEclatPage()
