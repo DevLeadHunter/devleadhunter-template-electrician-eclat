@@ -40,6 +40,9 @@ garde le miroir de ces défauts : les modifier ici impose de les modifier là-ba
 - Photo d'en-tête de moins de 480 px de large : remplacée par celle de la template.
 - Sans e-mail : pas de formulaire. Le formulaire ouvre un e-mail prérempli (`mailto:`).
 - Sans logo : une pastille à l'éclair le remplace.
+- Entreprise au Canada (`country` « CA ») : les libellés de la template et ses textes par défaut
+  passent en mots québécois (« Soumission gratuite », « Courriel ») par `regionalLabel` du paquet
+  partagé.
 
 ## Développer
 

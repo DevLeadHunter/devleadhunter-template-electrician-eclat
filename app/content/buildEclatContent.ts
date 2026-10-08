@@ -25,7 +25,7 @@ import type {
   SiteContentTrustItem,
 } from '../types/SiteContent'
 import type { SvgIconName } from '../types/SvgIcon'
-import { professionalLicenseLine } from '@devleadhunter/website-content'
+import { professionalLicenseLine, regionalLabel } from '@devleadhunter/website-content'
 import { eclatAccentShades } from './eclatAccentShades'
 import {
   ECLAT_DEFAULT_COPY,
@@ -48,6 +48,7 @@ import {
 } from './eclatText'
 
 type TrustItemText = { value: string; label: string }
+type StepText = { title: string; description: string }
 
 const MAXIMUM_TRUST_ITEMS: number = 4
 const MAXIMUM_SERVICES: number = 6
@@ -92,7 +93,8 @@ function buildHeroPoints(content: EclatSiteContentInput): string[] {
   const points: string[] = (content.heroPoints ?? [])
     .map((point: string): string => firstFilled(point))
     .filter((point: string): boolean => point.length > 0)
-  return points.length > 0 ? points : ECLAT_DEFAULT_COPY.heroPoints
+  if (points.length > 0) return points
+  return ECLAT_DEFAULT_COPY.heroPoints.map((point: string): string => regionalLabel(content, point))
 }
 
 /**
@@ -120,7 +122,7 @@ function trustItemIcon(item: TrustItemText): SvgIconName {
   const words: string = `${item.value} ${item.label}`.toLowerCase()
   if (RATING_VALUE.test(item.value) || words.includes('avis')) return 'star-outline'
   if (words.includes('7j') || words.includes('urgence') || words.includes('dépannage')) return 'zap'
-  if (words.includes('devis')) return 'quote-file'
+  if (words.includes('devis') || words.includes('soumission')) return 'quote-file'
   if (words.includes('garanti') || words.includes('assur')) return 'shield'
   if (words.includes('conform') || words.includes('norme')) return 'badge'
   return 'check'
@@ -138,7 +140,13 @@ function buildTrustItems(content: EclatSiteContentInput): EclatTrustItem[] {
       label: firstFilled(item.label),
     }))
     .filter((item: TrustItemText): boolean => item.value.length > 0 || item.label.length > 0)
-  const items: TrustItemText[] = filledItems.length > 0 ? filledItems : ECLAT_DEFAULT_TRUST_ITEMS
+  const items: TrustItemText[] =
+    filledItems.length > 0
+      ? filledItems
+      : ECLAT_DEFAULT_TRUST_ITEMS.map((item: TrustItemText): TrustItemText => ({
+          value: regionalLabel(content, item.value),
+          label: regionalLabel(content, item.label),
+        }))
   return items
     .slice(0, MAXIMUM_TRUST_ITEMS)
     .map((item: TrustItemText): EclatTrustItem => ({ ...item, icon: trustItemIcon(item) }))
@@ -199,7 +207,13 @@ function buildSteps(content: EclatSiteContentInput): EclatStep[] {
   const titledSteps: SiteContentStep[] = (content.steps ?? []).filter(
     (step: SiteContentStep): boolean => firstFilled(step.title).length > 0,
   )
-  const steps: SiteContentStep[] = titledSteps.length > 0 ? titledSteps : ECLAT_DEFAULT_STEPS
+  const steps: SiteContentStep[] =
+    titledSteps.length > 0
+      ? titledSteps
+      : ECLAT_DEFAULT_STEPS.map((step: StepText): StepText => ({
+          title: regionalLabel(content, step.title),
+          description: regionalLabel(content, step.description),
+        }))
   return steps.map((step: SiteContentStep, index: number): EclatStep => ({
     number: String(index + 1).padStart(2, '0'),
     title: firstFilled(step.title),
@@ -254,7 +268,11 @@ function buildQuestions(content: EclatSiteContentInput): EclatQuestion[] {
       answer: firstFilled(item.answer),
     }))
     .filter((item: EclatQuestion): boolean => item.question.length > 0 && item.answer.length > 0)
-  return questions.length > 0 ? questions : ECLAT_DEFAULT_QUESTIONS
+  if (questions.length > 0) return questions
+  return ECLAT_DEFAULT_QUESTIONS.map((item: EclatQuestion): EclatQuestion => ({
+    question: regionalLabel(content, item.question),
+    answer: regionalLabel(content, item.answer),
+  }))
 }
 
 /**
@@ -338,12 +356,16 @@ export function buildEclatContent(content: EclatSiteContentInput): EclatPageCont
     phoneHref: phoneHref(phone),
     email: firstFilled(content.email),
     address,
+    country: firstFilled(content.country),
     googleRating,
     hero: {
-      badge: firstFilled(content.heroBadge, ECLAT_DEFAULT_COPY.heroBadge),
+      badge: firstFilled(content.heroBadge, regionalLabel(content, ECLAT_DEFAULT_COPY.heroBadge)),
       title: buildHeroTitle(content, city),
       lead: firstFilled(content.subtitle, ECLAT_DEFAULT_COPY.heroLead),
-      quoteLabel: firstFilled(content.ctaQuoteLabel, ECLAT_DEFAULT_COPY.quoteLabel),
+      quoteLabel: firstFilled(
+        content.ctaQuoteLabel,
+        regionalLabel(content, ECLAT_DEFAULT_COPY.quoteLabel),
+      ),
       points: buildHeroPoints(content),
       image: firstFilled(content.heroImage, ECLAT_DEFAULT_IMAGES.hero),
       fallbackImage: ECLAT_DEFAULT_IMAGES.hero,
@@ -362,7 +384,9 @@ export function buildEclatContent(content: EclatSiteContentInput): EclatPageCont
       items: buildServices(content),
     },
     about: {
-      heading: glueShortWords(firstFilled(content.aboutHeading, ECLAT_DEFAULT_COPY.aboutHeading)),
+      heading: glueShortWords(
+        firstFilled(content.aboutHeading, regionalLabel(content, ECLAT_DEFAULT_COPY.aboutHeading)),
+      ),
       text: firstFilled(content.about, ECLAT_DEFAULT_COPY.aboutText),
       image: firstFilled(content.aboutImage, ECLAT_DEFAULT_IMAGES.about),
       facts: buildFacts(city, area, googleRating),
@@ -396,14 +420,17 @@ export function buildEclatContent(content: EclatSiteContentInput): EclatPageCont
     },
     callBanner: {
       title: glueShortWords(firstFilled(content.ctaTitle, ECLAT_DEFAULT_COPY.callBannerTitle)),
-      lead: firstFilled(content.ctaLead, ECLAT_DEFAULT_COPY.callBannerLead),
+      lead: firstFilled(content.ctaLead, regionalLabel(content, ECLAT_DEFAULT_COPY.callBannerLead)),
       image: firstFilled(content.images?.ctaBackground, ECLAT_DEFAULT_IMAGES.callBanner),
     },
     contact: {
       heading: glueShortWords(
         firstFilled(content.contactHeading, ECLAT_DEFAULT_COPY.contactHeading),
       ),
-      lead: firstFilled(content.contactLead, ECLAT_DEFAULT_COPY.contactLead),
+      lead: firstFilled(
+        content.contactLead,
+        regionalLabel(content, ECLAT_DEFAULT_COPY.contactLead),
+      ),
       openingHours: buildOpeningHours(content),
       map: buildMap(content, address, city, area),
     },

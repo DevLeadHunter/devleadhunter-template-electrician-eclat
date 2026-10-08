@@ -35,7 +35,7 @@
             <li v-if="page.email">
               <span class="eclat-tile"><SvgIcon name="mail" /></span>
               <span>
-                <span class="eclat-contact__label">E-mail</span>
+                <span class="eclat-contact__label">{{ regionalLabel(page, 'E-mail') }}</span>
                 <a :href="`mailto:${page.email}`">{{ page.email }}</a>
               </span>
             </li>
@@ -92,7 +92,7 @@
               autocomplete="tel" />
           </label>
           <label class="eclat-quote-form__field eclat-quote-form__field--wide">
-            <span>E-mail</span>
+            <span>{{ regionalLabel(page, 'E-mail') }}</span>
             <input
               v-model="quoteRequest.email"
               type="email"
@@ -110,7 +110,9 @@
             type="submit">
             Envoyer ma demande
           </button>
-          <p class="eclat-quote-form__note">Devis gratuit et sans engagement.</p>
+          <p class="eclat-quote-form__note">
+            {{ regionalLabel(page, 'Devis gratuit et sans engagement.') }}
+          </p>
         </form>
       </div>
       <div
@@ -139,6 +141,7 @@
 <script lang="ts" setup>
 import type { ComputedRef } from 'vue'
 import type { EclatPageContent } from '../../types/EclatPageContent'
+import { regionalLabel } from '@devleadhunter/website-content'
 import { reactive } from 'vue'
 import { useEclatPage } from '../../content/eclatPage'
 import { vEclatReveal } from '../../directives/vEclatReveal'
@@ -164,12 +167,14 @@ const quoteRequest: QuoteRequest = reactive<QuoteRequest>({
  * Ouvre la messagerie du visiteur sur un e-mail prérempli, adressé à l'entreprise, avec sa demande de devis.
  */
 function openQuoteRequestEmail(): void {
-  const subject: string = encodeURIComponent(`Demande de devis de ${quoteRequest.name}`)
+  const subject: string = encodeURIComponent(
+    `${regionalLabel(page.value, 'Demande de devis')} de ${quoteRequest.name}`,
+  )
   const body: string = encodeURIComponent(
     [
       `Nom : ${quoteRequest.name}`,
       `Téléphone : ${quoteRequest.phone || 'non renseigné'}`,
-      `E-mail : ${quoteRequest.email || 'non renseigné'}`,
+      `${regionalLabel(page.value, 'E-mail :')} ${quoteRequest.email || 'non renseigné'}`,
       '',
       'Besoin :',
       quoteRequest.message,

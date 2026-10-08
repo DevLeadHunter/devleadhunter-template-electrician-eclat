@@ -108,6 +108,7 @@ export type EclatPageContent = {
   phoneHref: string
   email: string
   address: string
+  country: string
   googleRating: EclatGoogleRating | null
   hero: EclatHero
   trustItems: EclatTrustItem[]

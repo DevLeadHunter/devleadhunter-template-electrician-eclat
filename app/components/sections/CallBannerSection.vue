@@ -7,7 +7,7 @@
         v-eclat-reveal
         class="eclat-banner__card">
         <div class="eclat-banner__text">
-          <span class="eclat-eyebrow">Devis gratuit</span>
+          <span class="eclat-eyebrow">{{ regionalLabel(page, 'Devis gratuit') }}</span>
           <h2>{{ page.callBanner.title }}</h2>
           <p>{{ page.callBanner.lead }}</p>
           <a
@@ -36,6 +36,7 @@
 <script lang="ts" setup>
 import type { ComputedRef } from 'vue'
 import type { EclatPageContent } from '../../types/EclatPageContent'
+import { regionalLabel } from '@devleadhunter/website-content'
 import { useEclatPage } from '../../content/eclatPage'
 import { vEclatReveal } from '../../directives/vEclatReveal'
 
