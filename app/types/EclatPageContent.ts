@@ -47,6 +47,12 @@ export type EclatService = {
   image: string
 }
 
+/** Photo de la template qu'une carte de prestation sans photo à elle peut recevoir, avec les débuts de mots (sans accents) des titres qu'elle illustre. */
+export type EclatServicePhotoFallback = {
+  url: string
+  titleWordStarts: string[]
+}
+
 export type EclatFact = {
   label: string
   value: string
@@ -101,6 +107,7 @@ export type EclatAccentShades = {
 /** Contenu complet rendu par les sections : données du prospect fusionnées aux textes par défaut. */
 export type EclatPageContent = {
   businessName: string
+  headline: string
   logo: string
   city: string
   area: string

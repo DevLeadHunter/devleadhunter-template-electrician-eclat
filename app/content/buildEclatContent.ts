@@ -9,6 +9,7 @@ import type {
   EclatQuestion,
   EclatReview,
   EclatService,
+  EclatServicePhotoFallback,
   EclatSiteContentInput,
   EclatSocialLink,
   EclatStep,
@@ -35,6 +36,9 @@ import {
   ECLAT_DEFAULT_STEPS,
   ECLAT_DEFAULT_TRUST_ITEMS,
   ECLAT_MINIMUM_DISPLAYED_RATING,
+  ECLAT_NEUTRAL_SERVICE_PHOTOS,
+  ECLAT_SERVICE_PHOTO_FALLBACKS,
+  ECLAT_STOCK_PHOTO_ORIGIN,
 } from './eclatDefaults'
 import {
   authorInitials,
@@ -44,11 +48,14 @@ import {
   glueShortWords,
   glueTrailingSpace,
   phoneHref,
+  ensureFinalPeriod,
   withoutLeadingArticle,
+  splitWordsWithoutAccents,
 } from './eclatText'
 
 type TrustItemText = { value: string; label: string }
 type StepText = { title: string; description: string }
+type ServiceText = { title: string; description: string }
 
 const MAXIMUM_TRUST_ITEMS: number = 4
 const MAXIMUM_SERVICES: number = 6
@@ -58,16 +65,25 @@ const AREA_LEVEL_MAP_ZOOM: number = 11
 const RATING_VALUE: RegExp = /^\d(?:[.,]\d)?\s*\/\s*5$/
 
 /**
- * Découpe le titre du haut de page autour du nom de la ville, pour le colorer.
+ * Titre du haut de page : celui du contenu, sinon celui de la template, avec la ville quand elle est connue.
  * @param content - Contenu du prospect.
  * @param city - Ville du prospect, ou une chaîne vide.
- * @returns Le titre en trois morceaux ; sans ville reconnue, tout est dans le premier.
+ * @returns Le titre, en un seul texte.
  */
-function buildHeroTitle(content: EclatSiteContentInput, city: string): EclatHeroTitle {
+function buildHeadline(content: EclatSiteContentInput, city: string): string {
   const defaultTitle: string = city
     ? contractCityPreposition(`${ECLAT_DEFAULT_COPY.heroTitleWithCity} ${city}`)
     : ECLAT_DEFAULT_COPY.heroTitle
-  const title: string = firstFilled(content.heroTitle, defaultTitle)
+  return firstFilled(content.heroTitle, defaultTitle)
+}
+
+/**
+ * Découpe le titre du haut de page autour du nom de la ville, pour le colorer.
+ * @param title - Titre du haut de page.
+ * @param city - Ville du prospect, ou une chaîne vide.
+ * @returns Le titre en trois morceaux ; sans ville reconnue, tout est dans le premier.
+ */
+function buildHeroTitle(title: string, city: string): EclatHeroTitle {
   const cityCandidates: string[] = [city, withoutLeadingArticle(city)].filter(
     (candidate: string): boolean => candidate.length > 0,
   )
@@ -85,16 +101,14 @@ function buildHeroTitle(content: EclatSiteContentInput, city: string): EclatHero
 }
 
 /**
- * Points forts affichés sous les boutons du haut de page.
+ * Points forts affichés sous les boutons du haut de page : la template n'en invente aucun.
  * @param content - Contenu du prospect.
- * @returns Les points renseignés, sinon ceux de la template.
+ * @returns Les points renseignés, ou une liste vide.
  */
 function buildHeroPoints(content: EclatSiteContentInput): string[] {
-  const points: string[] = (content.heroPoints ?? [])
+  return (content.heroPoints ?? [])
     .map((point: string): string => firstFilled(point))
     .filter((point: string): boolean => point.length > 0)
-  if (points.length > 0) return points
-  return ECLAT_DEFAULT_COPY.heroPoints.map((point: string): string => regionalLabel(content, point))
 }
 
 /**
@@ -129,11 +143,44 @@ function trustItemIcon(item: TrustItemText): SvgIconName {
 }
 
 /**
+ * Repères de confiance de la template, quand le contenu n'en a pas : la note Google quand elle existe, puis des repères neutres.
+ * @param content - Contenu du prospect.
+ * @param googleRating - Note Google affichable, ou null.
+ * @returns Les repères par défaut.
+ */
+function buildDefaultTrustItems(
+  content: EclatSiteContentInput,
+  googleRating: EclatGoogleRating | null,
+): TrustItemText[] {
+  const ratingItems: TrustItemText[] = googleRating
+    ? [
+        {
+          value: `${googleRating.value}/5`,
+          label: googleRating.reviewsCount
+            ? `${googleRating.reviewsCount} avis Google`
+            : 'Avis Google',
+        },
+      ]
+    : []
+  return [
+    ...ratingItems,
+    ...ECLAT_DEFAULT_TRUST_ITEMS.map((item: TrustItemText): TrustItemText => ({
+      value: regionalLabel(content, item.value),
+      label: regionalLabel(content, item.label),
+    })),
+  ]
+}
+
+/**
  * Repères de confiance, chacun avec l'icône qui correspond à ce qu'il annonce.
  * @param content - Contenu du prospect.
+ * @param googleRating - Note Google affichable, ou null.
  * @returns Quatre repères au plus ; ceux de la template quand le contenu n'en a pas.
  */
-function buildTrustItems(content: EclatSiteContentInput): EclatTrustItem[] {
+function buildTrustItems(
+  content: EclatSiteContentInput,
+  googleRating: EclatGoogleRating | null,
+): EclatTrustItem[] {
   const filledItems: TrustItemText[] = (content.trustItems ?? [])
     .map((item: SiteContentTrustItem): TrustItemText => ({
       value: firstFilled(item.value),
@@ -141,39 +188,84 @@ function buildTrustItems(content: EclatSiteContentInput): EclatTrustItem[] {
     }))
     .filter((item: TrustItemText): boolean => item.value.length > 0 || item.label.length > 0)
   const items: TrustItemText[] =
-    filledItems.length > 0
-      ? filledItems
-      : ECLAT_DEFAULT_TRUST_ITEMS.map((item: TrustItemText): TrustItemText => ({
-          value: regionalLabel(content, item.value),
-          label: regionalLabel(content, item.label),
-        }))
+    filledItems.length > 0 ? filledItems : buildDefaultTrustItems(content, googleRating)
   return items
     .slice(0, MAXIMUM_TRUST_ITEMS)
     .map((item: TrustItemText): EclatTrustItem => ({ ...item, icon: trustItemIcon(item) }))
 }
 
 /**
- * Prestations affichées, chacune avec sa photo.
+ * Dit si une photo est l'une de celles de la template, jamais une photo du prospect.
+ * @param url - Adresse de la photo.
+ * @returns Vrai pour une photo de la template.
+ */
+function isTemplatePhoto(url: string): boolean {
+  return url.startsWith(`${ECLAT_STOCK_PHOTO_ORIGIN}/`)
+}
+
+/**
+ * Choisit pour une carte sans photo à elle une photo de la template qui illustre un mot du titre, sinon une photo neutre.
+ * @param title - Titre de la carte.
+ * @param usedPhotos - Photos déjà posées sur les autres cartes, évitées tant qu'il en reste d'autres.
+ * @returns L'adresse de la photo.
+ */
+function pickTemplatePhotoForService(title: string, usedPhotos: Set<string>): string {
+  const titleWords: string[] = splitWordsWithoutAccents(title)
+  const illustratingPhoto: string | undefined = ECLAT_SERVICE_PHOTO_FALLBACKS.find(
+    (fallback: EclatServicePhotoFallback): boolean =>
+      !usedPhotos.has(fallback.url) &&
+      fallback.titleWordStarts.some((wordStart: string): boolean =>
+        titleWords.some((word: string): boolean => word.startsWith(wordStart)),
+      ),
+  )?.url
+  const unusedNeutralPhoto: string | undefined = ECLAT_NEUTRAL_SERVICE_PHOTOS.find(
+    (url: string): boolean => !usedPhotos.has(url),
+  )
+  return (
+    illustratingPhoto ??
+    unusedNeutralPhoto ??
+    ECLAT_NEUTRAL_SERVICE_PHOTOS[usedPhotos.size % ECLAT_NEUTRAL_SERVICE_PHOTOS.length] ??
+    ''
+  )
+}
+
+/**
+ * Prestations affichées, chacune avec sa photo : celle du prospect, sinon une photo de la template qui ne contredit pas son titre.
  * @param content - Contenu du prospect.
- * @returns Six prestations au plus ; celles de la template quand le contenu n'en a pas.
+ * @returns Six prestations au plus ; celles de la template, avec leurs photos, quand le contenu n'en a pas.
  */
 function buildServices(content: EclatSiteContentInput): EclatService[] {
-  const titledServices: SiteContentService[] = (content.services ?? []).filter(
-    (service: SiteContentService): boolean => firstFilled(service.title).length > 0,
-  )
-  const services: SiteContentService[] =
-    titledServices.length > 0 ? titledServices : ECLAT_DEFAULT_SERVICES
-  return services
+  const titledServices: SiteContentService[] = (content.services ?? [])
+    .filter((service: SiteContentService): boolean => firstFilled(service.title).length > 0)
     .slice(0, MAXIMUM_SERVICES)
-    .map((service: SiteContentService, index: number): EclatService => ({
+  if (titledServices.length === 0) {
+    return ECLAT_DEFAULT_SERVICES.map((service: ServiceText, index: number): EclatService => ({
       number: String(index + 1).padStart(2, '0'),
-      title: firstFilled(service.title),
-      description: firstFilled(service.description),
-      image: firstFilled(
-        service.image,
-        ECLAT_DEFAULT_IMAGES.services[index % ECLAT_DEFAULT_IMAGES.services.length],
-      ),
+      title: service.title,
+      description: service.description,
+      image: ECLAT_DEFAULT_IMAGES.services[index] ?? '',
     }))
+  }
+  const usedPhotos: Set<string> = new Set<string>(
+    titledServices
+      .map((service: SiteContentService): string => firstFilled(service.image))
+      .filter((url: string): boolean => url.length > 0 && !isTemplatePhoto(url)),
+  )
+  return titledServices.map((service: SiteContentService, index: number): EclatService => {
+    const title: string = firstFilled(service.title)
+    const ownPhoto: string = firstFilled(service.image)
+    const image: string =
+      ownPhoto && !isTemplatePhoto(ownPhoto)
+        ? ownPhoto
+        : pickTemplatePhotoForService(title, usedPhotos)
+    usedPhotos.add(image)
+    return {
+      number: String(index + 1).padStart(2, '0'),
+      title,
+      description: firstFilled(service.description),
+      image,
+    }
+  })
 }
 
 /**
@@ -222,14 +314,17 @@ function buildSteps(content: EclatSiteContentInput): EclatStep[] {
 }
 
 /**
- * Photos de réalisations propres au prospect.
+ * Photos de réalisations propres au prospect : les photos de la template que l'API range dans la galerie n'en sont pas.
  * @param content - Contenu du prospect.
  * @param businessName - Nom de l'entreprise, pour le texte alternatif.
- * @returns Les photos renseignées, ou une liste vide.
+ * @returns Les photos du prospect, ou une liste vide.
  */
 function buildProspectPhotos(content: EclatSiteContentInput, businessName: string): EclatPhoto[] {
   return (content.gallery ?? [])
-    .filter((image: SiteContentGalleryImage): boolean => firstFilled(image.url).length > 0)
+    .filter((image: SiteContentGalleryImage): boolean => {
+      const url: string = firstFilled(image.url)
+      return url.length > 0 && !isTemplatePhoto(url)
+    })
     .map((image: SiteContentGalleryImage): EclatPhoto => ({
       url: firstFilled(image.url),
       alt: firstFilled(image.alt, `Réalisation de ${businessName}`),
@@ -346,9 +441,11 @@ export function buildEclatContent(content: EclatSiteContentInput): EclatPageCont
   const address: string = firstFilled(content.address)
   const googleRating: EclatGoogleRating | null = buildGoogleRating(content)
   const prospectPhotos: EclatPhoto[] = buildProspectPhotos(content, businessName)
+  const headline: string = buildHeadline(content, city)
 
   return {
     businessName,
+    headline,
     logo: firstFilled(content.logo),
     city,
     area,
@@ -360,7 +457,7 @@ export function buildEclatContent(content: EclatSiteContentInput): EclatPageCont
     googleRating,
     hero: {
       badge: firstFilled(content.heroBadge, regionalLabel(content, ECLAT_DEFAULT_COPY.heroBadge)),
-      title: buildHeroTitle(content, city),
+      title: buildHeroTitle(headline, city),
       lead: firstFilled(content.subtitle, ECLAT_DEFAULT_COPY.heroLead),
       quoteLabel: firstFilled(
         content.ctaQuoteLabel,
@@ -375,7 +472,7 @@ export function buildEclatContent(content: EclatSiteContentInput): EclatPageCont
         ECLAT_DEFAULT_IMAGES.heroSecondary,
       ),
     },
-    trustItems: buildTrustItems(content),
+    trustItems: buildTrustItems(content, googleRating),
     services: {
       heading: glueShortWords(
         firstFilled(content.servicesHeading, ECLAT_DEFAULT_COPY.servicesHeading),
@@ -399,13 +496,7 @@ export function buildEclatContent(content: EclatSiteContentInput): EclatPageCont
       heading: glueShortWords(
         firstFilled(content.galleryHeading, ECLAT_DEFAULT_COPY.galleryHeading),
       ),
-      photos:
-        prospectPhotos.length > 0
-          ? prospectPhotos
-          : ECLAT_DEFAULT_IMAGES.gallery.map((url: string): EclatPhoto => ({
-              url,
-              alt: 'Exemple de réalisation',
-            })),
+      photos: prospectPhotos,
     },
     reviews: {
       heading: glueShortWords(
@@ -435,9 +526,7 @@ export function buildEclatContent(content: EclatSiteContentInput): EclatPageCont
       map: buildMap(content, address, city, area),
     },
     footer: {
-      tagline: contractCityPreposition(
-        `${ECLAT_DEFAULT_COPY.footerTagline}${city ? ` à ${city}` : ''}.`,
-      ),
+      tagline: ensureFinalPeriod(headline),
       licenseLine: professionalLicenseLine(content),
       social: buildSocialLinks(content),
     },

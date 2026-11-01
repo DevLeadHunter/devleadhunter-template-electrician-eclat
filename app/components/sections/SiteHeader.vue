@@ -55,8 +55,10 @@ const navigationLinks: ComputedRef<NavigationLink[]> = computed((): NavigationLi
   const links: NavigationLink[] = [
     { label: 'Prestations', href: '#prestations' },
     { label: 'À propos', href: '#a-propos' },
-    { label: 'Réalisations', href: '#realisations' },
   ]
+  if (page.value.gallery.photos.length > 0) {
+    links.push({ label: 'Réalisations', href: '#realisations' })
+  }
   if (page.value.reviews.items.length > 0) {
     links.push({ label: 'Avis', href: '#avis' })
   }

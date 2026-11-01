@@ -103,7 +103,7 @@
             <textarea
               v-model="quoteRequest.message"
               required
-              placeholder="Par exemple : tableau à remplacer dans une maison de 1975."></textarea>
+              placeholder="Par exemple : les travaux, l'adresse et vos disponibilités."></textarea>
           </label>
           <button
             class="eclat-btn"
@@ -111,7 +111,7 @@
             Envoyer ma demande
           </button>
           <p class="eclat-quote-form__note">
-            {{ regionalLabel(page, 'Devis gratuit et sans engagement.') }}
+            Le bouton ouvre votre messagerie avec votre demande déjà rédigée.
           </p>
         </form>
       </div>

@@ -36,13 +36,21 @@ garde le miroir de ces défauts : les modifier ici impose de les modifier là-ba
 
 ## Comportements à connaître
 
+- Rien d'inventé : aucun texte écrit en dur ne promet un prix, un délai, une garantie ou une
+  certification. Sans points forts dans le contenu, le haut de page n'en montre aucun ; le pied de
+  page reprend le titre du haut de page.
+- Galerie « Réalisations » : seulement les photos du prospect. Les photos de la template (servies par
+  Unsplash) n'y vont jamais ; sans photo du prospect, la section et ses liens disparaissent.
+- Carte de prestation sans photo du prospect : une photo de la template qui illustre un mot de son
+  titre (`ECLAT_SERVICE_PHOTO_FALLBACKS`), sinon une photo neutre (`ECLAT_NEUTRAL_SERVICE_PHOTOS`).
+  Une photo de la template posée sur une carte est choisie de la même façon.
 - Note Google absente ou inférieure à 3,5 : le coin découpé de la photo d'en-tête montre la ville.
 - Photo d'en-tête de moins de 480 px de large : remplacée par celle de la template.
 - Sans e-mail : pas de formulaire. Le formulaire ouvre un e-mail prérempli (`mailto:`).
 - Sans logo : une pastille à l'éclair le remplace.
 - Entreprise au Canada (`country` « CA ») : les libellés de la template et ses textes par défaut
-  passent en mots québécois (« Soumission gratuite », « Courriel ») par `regionalLabel` du paquet
-  partagé.
+  passent en mots québécois (« Courriel », « Demander une soumission ») par `regionalLabel` du
+  paquet partagé.
 
 ## Développer
 

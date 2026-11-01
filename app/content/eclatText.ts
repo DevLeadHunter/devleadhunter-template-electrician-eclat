@@ -3,6 +3,9 @@ const SHORT_WORD_BEFORE_SPACE: RegExp =
   /(^|\s)(à|au|aux|de|du|des|en|et|ou|un|une|le|la|les)\s(?=\S)/gi
 const LEADING_ARTICLE: RegExp = /^(le|la|les|l['’])\s*/i
 const TRAILING_SPACES: RegExp = /\s+$/
+const COMBINING_ACCENTS: RegExp = /[\u0300-\u036f]/g
+const NON_WORD_CHARACTERS: RegExp = /[^a-z0-9]+/
+const FINAL_PUNCTUATION: RegExp = /[.!?…]$/
 
 /**
  * Retourne la première valeur renseignée.
@@ -70,6 +73,29 @@ export function withCityOnce(label: string, city: string): string {
     .toLocaleLowerCase('fr')
     .includes(trimmedCity.toLocaleLowerCase('fr'))
   return trimmedCity && !isCityInLabel ? `${label} · ${trimmedCity}` : label
+}
+
+/**
+ * Mots d'un texte en minuscules et sans accents (« Contrôle périodique » donne « controle », « periodique »).
+ * @param text - Texte court, le plus souvent un titre.
+ * @returns Ses mots, dans l'ordre.
+ */
+export function splitWordsWithoutAccents(text: string): string[] {
+  return text
+    .normalize('NFD')
+    .replace(COMBINING_ACCENTS, '')
+    .toLowerCase()
+    .split(NON_WORD_CHARACTERS)
+    .filter((word: string): boolean => word.length > 0)
+}
+
+/**
+ * Termine une phrase par un point, sauf si elle porte déjà sa ponctuation finale.
+ * @param sentence - Phrase ou titre.
+ * @returns La phrase terminée par un point.
+ */
+export function ensureFinalPeriod(sentence: string): string {
+  return FINAL_PUNCTUATION.test(sentence) ? sentence : `${sentence}.`
 }
 
 /**

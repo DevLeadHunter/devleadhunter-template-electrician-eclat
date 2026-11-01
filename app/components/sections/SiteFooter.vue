@@ -39,7 +39,7 @@
         <ul>
           <li><a href="#prestations">Prestations</a></li>
           <li><a href="#a-propos">À propos</a></li>
-          <li><a href="#realisations">Réalisations</a></li>
+          <li v-if="page.gallery.photos.length > 0"><a href="#realisations">Réalisations</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>

@@ -24,7 +24,9 @@
           {{ page.phone }}
         </a>
       </div>
-      <ul class="eclat-hero__points">
+      <ul
+        v-if="page.hero.points.length > 0"
+        class="eclat-hero__points">
         <li
           v-for="point in page.hero.points"
           :key="point">

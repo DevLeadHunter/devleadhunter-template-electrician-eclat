@@ -39,7 +39,7 @@
             <span class="eclat-review__initials">{{ review.initials }}</span>
             <span class="eclat-review__author">
               <strong>{{ review.author }}</strong>
-              <span>Avis Google</span>
+              <span>Avis client</span>
             </span>
           </footer>
         </blockquote>

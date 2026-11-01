@@ -1,4 +1,7 @@
-import type { EclatQuestion } from '../types/EclatPageContent'
+import type { EclatQuestion, EclatServicePhotoFallback } from '../types/EclatPageContent'
+
+/** Origine de toutes les photos de la template : une photo servie d'ailleurs est celle du prospect. */
+export const ECLAT_STOCK_PHOTO_ORIGIN: string = 'https://images.unsplash.com'
 
 /**
  * Adresse d'une photo Unsplash recadrée à la largeur voulue.
@@ -7,8 +10,21 @@ import type { EclatQuestion } from '../types/EclatPageContent'
  * @returns L'adresse de l'image.
  */
 function unsplashPhoto(photoId: string, width: number): string {
-  return `https://images.unsplash.com/${photoId}?auto=format&fit=crop&w=${width}&q=80`
+  return `${ECLAT_STOCK_PHOTO_ORIGIN}/${photoId}?auto=format&fit=crop&w=${width}&q=80`
 }
+
+const WALLBOX_PHOTO: string = unsplashPhoto('photo-1653665674648-7cc7fa657547', 900)
+const WALLBOX_WITH_CAR_PHOTO: string = unsplashPhoto('photo-1732194044246-9c5f6bc6582c', 900)
+const GARDEN_LIGHTS_PHOTO: string = unsplashPhoto('photo-1788619371179-b3031f2cbe23', 900)
+const TESTER_ON_SWITCHGEAR_PHOTO: string = unsplashPhoto('photo-1758101755915-462eddc23f57', 900)
+const SWITCHBOARD_PHOTO: string = unsplashPhoto('photo-1544724569-5f546fd6f2b5', 900)
+const BREAKERS_PHOTO: string = unsplashPhoto('photo-1576446470246-499c738d1c8e', 900)
+const WALL_SOCKET_PHOTO: string = unsplashPhoto('photo-1508920291026-c344bbfca1ab', 900)
+const OPEN_SOCKET_BOX_PHOTO: string = unsplashPhoto('photo-1751486289947-4f5f5961b3aa', 900)
+const LADDER_WORK_PHOTO: string = unsplashPhoto('photo-1665242043190-0ef29390d289', 900)
+const LED_CORRIDOR_PHOTO: string = unsplashPhoto('photo-1782457696919-08e1aa4f7427', 900)
+const OPEN_PLAN_LIVING_ROOM_PHOTO: string = unsplashPhoto('photo-1680416124510-5eae1beca412', 900)
+const LIVING_ROOM_PHOTO: string = unsplashPhoto('photo-1666585607888-3f6fe0b323d8', 900)
 
 /** Photos affichées quand le prospect n'a pas les siennes. Le module Python de l'API en garde le miroir. */
 export const ECLAT_DEFAULT_IMAGES: {
@@ -24,33 +40,144 @@ export const ECLAT_DEFAULT_IMAGES: {
   about: unsplashPhoto('photo-1646640381839-02748ae8ddf0', 1200),
   callBanner: unsplashPhoto('photo-1547393947-a6a221f74e59', 1400),
   services: [
-    unsplashPhoto('photo-1758101755915-462eddc23f57', 900),
-    unsplashPhoto('photo-1751486289947-4f5f5961b3aa', 900),
-    unsplashPhoto('photo-1544724569-5f546fd6f2b5', 900),
-    unsplashPhoto('photo-1665242043190-0ef29390d289', 900),
-    unsplashPhoto('photo-1782457696919-08e1aa4f7427', 900),
-    unsplashPhoto('photo-1653665674648-7cc7fa657547', 900),
+    TESTER_ON_SWITCHGEAR_PHOTO,
+    OPEN_SOCKET_BOX_PHOTO,
+    SWITCHBOARD_PHOTO,
+    LADDER_WORK_PHOTO,
+    LED_CORRIDOR_PHOTO,
+    WALL_SOCKET_PHOTO,
   ],
   gallery: [
-    unsplashPhoto('photo-1732194044246-9c5f6bc6582c', 900),
-    unsplashPhoto('photo-1666585607888-3f6fe0b323d8', 900),
-    unsplashPhoto('photo-1788619371179-b3031f2cbe23', 900),
-    unsplashPhoto('photo-1576446470246-499c738d1c8e', 900),
-    unsplashPhoto('photo-1508920291026-c344bbfca1ab', 900),
-    unsplashPhoto('photo-1680416124510-5eae1beca412', 900),
+    WALLBOX_WITH_CAR_PHOTO,
+    LIVING_ROOM_PHOTO,
+    GARDEN_LIGHTS_PHOTO,
+    BREAKERS_PHOTO,
+    WALL_SOCKET_PHOTO,
+    OPEN_PLAN_LIVING_ROOM_PHOTO,
   ],
 }
+
+/** Photos qu'une carte sans photo à elle peut recevoir, par ordre de préférence, chacune sous un titre qui nomme ce qu'elle montre. */
+export const ECLAT_SERVICE_PHOTO_FALLBACKS: EclatServicePhotoFallback[] = [
+  { url: WALLBOX_PHOTO, titleWordStarts: ['borne', 'recharge', 'vehicule', 'voiture'] },
+  { url: WALLBOX_WITH_CAR_PHOTO, titleWordStarts: ['borne', 'recharge', 'vehicule', 'voiture'] },
+  {
+    url: GARDEN_LIGHTS_PHOTO,
+    titleWordStarts: ['exterieur', 'jardin', 'guirlande', 'terrasse', 'piscine', 'facade', 'allee'],
+  },
+  {
+    url: TESTER_ON_SWITCHGEAR_PHOTO,
+    titleWordStarts: [
+      'electricit',
+      'depann',
+      'panne',
+      'controle',
+      'mesure',
+      'diagnostic',
+      'securite',
+      'verification',
+      'conseil',
+    ],
+  },
+  {
+    url: SWITCHBOARD_PHOTO,
+    titleWordStarts: [
+      'tableau',
+      'armoire',
+      'coffret',
+      'disjoncteur',
+      'compteur',
+      'linky',
+      'automatisme',
+      'depann',
+      'panne',
+      'controle',
+    ],
+  },
+  {
+    url: BREAKERS_PHOTO,
+    titleWordStarts: [
+      'tableau',
+      'armoire',
+      'coffret',
+      'disjoncteur',
+      'compteur',
+      'linky',
+      'automatisme',
+      'depann',
+      'panne',
+      'controle',
+      'norme',
+    ],
+  },
+  { url: WALL_SOCKET_PHOTO, titleWordStarts: ['prise', 'circuit', 'raccord', 'branchement'] },
+  {
+    url: OPEN_SOCKET_BOX_PHOTO,
+    titleWordStarts: [
+      'prise',
+      'circuit',
+      'raccord',
+      'norme',
+      'renovation',
+      'transformation',
+      'controle',
+    ],
+  },
+  {
+    url: LADDER_WORK_PHOTO,
+    titleWordStarts: [
+      'installation',
+      'renovation',
+      'neuf',
+      'travaux',
+      'chantier',
+      'cablage',
+      'habitat',
+      'tertiaire',
+      'locaux',
+      'commerce',
+      'bureau',
+    ],
+  },
+  {
+    url: LED_CORRIDOR_PHOTO,
+    titleWordStarts: [
+      'eclairage',
+      'lumiere',
+      'luminaire',
+      'led',
+      'spot',
+      'domotique',
+      'applique',
+      'bandeau',
+    ],
+  },
+  {
+    url: OPEN_PLAN_LIVING_ROOM_PHOTO,
+    titleWordStarts: ['eclairage', 'luminaire', 'interieur', 'salon', 'maison', 'logement'],
+  },
+  {
+    url: LIVING_ROOM_PHOTO,
+    titleWordStarts: ['eclairage', 'luminaire', 'interieur', 'salon', 'maison', 'logement'],
+  },
+]
+
+/** Photos qui ne montrent aucune prestation précise : elles vont sous un titre qu'aucune autre photo n'illustre. */
+export const ECLAT_NEUTRAL_SERVICE_PHOTOS: string[] = [
+  OPEN_PLAN_LIVING_ROOM_PHOTO,
+  LIVING_ROOM_PHOTO,
+  LADDER_WORK_PHOTO,
+  OPEN_SOCKET_BOX_PHOTO,
+]
 
 export const ECLAT_DEFAULT_SERVICES: { title: string; description: string }[] = [
   {
     title: 'Dépannage électrique',
-    description:
-      'Panne, court-circuit, disjoncteur qui saute : diagnostic et remise en service rapides.',
+    description: 'Panne, court-circuit, disjoncteur qui saute : diagnostic et remise en service.',
   },
   {
     title: 'Mise aux normes',
-    description:
-      "Remise à niveau complète de votre installation, aux normes en vigueur, attestation à l'appui.",
+    description: 'Remise à niveau de votre installation selon les normes en vigueur.',
   },
   {
     title: 'Tableau électrique',
@@ -61,12 +188,12 @@ export const ECLAT_DEFAULT_SERVICES: { title: string; description: string }[] = 
     description: 'Neuf ou rénovation : réseau complet, prises, points lumineux.',
   },
   {
-    title: 'Éclairage et domotique',
-    description: 'Éclairage intérieur et extérieur, interrupteurs connectés, domotique.',
+    title: 'Éclairage',
+    description: 'Éclairage intérieur et extérieur, points lumineux et interrupteurs.',
   },
   {
-    title: 'Borne de recharge',
-    description: 'Installation de bornes de recharge pour véhicule électrique.',
+    title: 'Prises et circuits',
+    description: 'Ajout de prises et de circuits dédiés : four, plaques de cuisson, chauffe-eau.',
   },
 ]
 
@@ -75,44 +202,36 @@ export const ECLAT_DEFAULT_STEPS: { title: string; description: string }[] = [
     title: 'Premier contact',
     description: 'Vous décrivez votre besoin par téléphone ou par message.',
   },
-  { title: 'Visite et devis', description: 'Passage sur place, puis devis gratuit et détaillé.' },
-  { title: 'Travaux', description: 'Réalisés à la date convenue, chantier laissé propre.' },
+  { title: 'Visite et devis', description: 'Passage sur place si besoin, puis devis détaillé.' },
+  { title: 'Travaux', description: 'Réalisés à la date convenue ensemble.' },
   {
     title: 'Contrôle final',
-    description: 'Chaque circuit est testé et expliqué avant le départ.',
+    description: "L'installation est vérifiée avant le départ.",
   },
 ]
 
 export const ECLAT_DEFAULT_QUESTIONS: EclatQuestion[] = [
   {
-    question: 'Intervenez-vous en urgence ?',
-    answer: 'Oui, pour toute panne électrique nous intervenons au plus vite, 7j/7.',
-  },
-  {
-    question: 'Le devis est-il gratuit ?',
-    answer: 'Le devis est gratuit et sans engagement, remis avant les travaux.',
-  },
-  {
-    question: 'Délivrez-vous une attestation de conformité ?',
-    answer: 'Oui, chaque installation neuve ou mise aux normes est livrée avec son attestation.',
-  },
-  {
-    question: 'Quelles zones couvrez-vous ?',
+    question: 'Comment demander un devis ?',
     answer:
-      'Nous intervenons dans notre commune et celles des alentours. Un doute sur la vôtre ? Appelez-nous.',
+      "Par téléphone ou avec le formulaire de contact : décrivez les travaux et l'adresse du chantier.",
   },
   {
-    question: 'Vos travaux sont-ils garantis ?',
+    question: 'Dans quel secteur intervenez-vous ?',
     answer:
-      'Oui, nos installations sont conformes et couvertes par notre assurance professionnelle.',
+      "Le secteur d'intervention est indiqué dans la partie contact. Un doute sur votre commune ? Le plus simple est d'appeler.",
+  },
+  {
+    question: "Que préparer avant d'appeler ?",
+    answer:
+      "Le type de travaux, l'adresse et vos disponibilités. Une photo de l'installation aide aussi à préparer le devis.",
   },
 ]
 
+/** Repères de confiance quand le contenu n'en a pas : rien qui promette un délai, une garantie ou un prix. */
 export const ECLAT_DEFAULT_TRUST_ITEMS: { value: string; label: string }[] = [
-  { value: '7j/7', label: 'Dépannage et urgences' },
-  { value: 'Devis gratuit', label: 'Sans engagement' },
-  { value: 'Travail garanti', label: 'Interventions assurées' },
-  { value: '100% conforme', label: 'Installations aux normes' },
+  { value: 'Local', label: 'Artisan de proximité' },
+  { value: 'Devis', label: 'Sur demande' },
 ]
 
 export const ECLAT_DEFAULT_COPY: {
@@ -121,7 +240,6 @@ export const ECLAT_DEFAULT_COPY: {
   heroTitle: string
   heroTitleWithCity: string
   heroLead: string
-  heroPoints: string[]
   quoteLabel: string
   servicesHeading: string
   servicesLead: string
@@ -136,31 +254,26 @@ export const ECLAT_DEFAULT_COPY: {
   callBannerLead: string
   contactHeading: string
   contactLead: string
-  footerTagline: string
 } = {
   businessName: 'Votre électricien',
   heroBadge: 'Artisan électricien',
-  heroTitle: 'Votre électricien de confiance',
-  heroTitleWithCity: 'Votre électricien de confiance à',
-  heroLead:
-    'Dépannage, mise aux normes, rénovation et borne de recharge. Un travail propre, sécurisé et garanti.',
-  heroPoints: ['Devis gratuit', 'Intervention rapide', 'Travail garanti'],
+  heroTitle: 'Votre électricien',
+  heroTitleWithCity: 'Votre électricien à',
+  heroLead: 'Dépannage, mise aux normes, tableau électrique, installation et rénovation.',
   quoteLabel: 'Demander un devis',
   servicesHeading: "Tout ce qu'il faut pour une installation sûre",
   servicesLead: 'Du simple dépannage à la rénovation complète de votre installation électrique.',
-  aboutHeading: 'Un travail soigné, du devis au dernier test',
-  aboutText:
-    'Électricien qualifié à votre service pour vos dépannages, installations et mises aux normes. Travail conforme, soigné et sécurisé, avec un diagnostic clair et un prix juste.',
+  aboutHeading: 'Qui intervient chez vous',
+  aboutText: 'Électricien pour vos dépannages, vos installations et vos mises aux normes.',
   methodHeading: 'Comment se passe une intervention',
-  galleryHeading: 'Nos chantiers récents',
+  galleryHeading: 'Quelques chantiers en photos',
   reviewsHeading: 'Ce que disent nos clients',
   faqHeading: 'Questions fréquentes',
-  faqLead: "Les réponses aux questions qu'on nous pose le plus souvent.",
+  faqLead: 'Les réponses aux questions courantes.',
   callBannerTitle: 'Une panne ou un projet ?',
-  callBannerLead: 'Décrivez votre besoin, vous recevez une réponse rapide et un devis gratuit.',
+  callBannerLead: 'Décrivez votre besoin par téléphone ou avec le formulaire ci-dessous.',
   contactHeading: 'Parlons de votre projet',
-  contactLead: 'Par téléphone, par e-mail ou avec le formulaire : réponse rapide et devis gratuit.',
-  footerTagline: 'Dépannage, mise aux normes, rénovation et borne de recharge',
+  contactLead: 'Par téléphone, par e-mail ou avec le formulaire.',
 }
 
 /** Couleur d'accent quand le prospect n'a pas de couleur de marque exploitable. */

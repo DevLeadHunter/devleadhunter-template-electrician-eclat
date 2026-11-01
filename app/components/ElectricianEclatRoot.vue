@@ -10,7 +10,9 @@
       <ServicesSection v-bind="editableAttrs(props.content._editable?.services)" />
       <AboutSection v-bind="editableAttrs(props.content._editable?.about)" />
       <MethodSection v-bind="editableAttrs(props.content._editable?.method)" />
-      <GallerySection v-bind="editableAttrs(props.content._editable?.gallery)" />
+      <GallerySection
+        v-if="page.gallery.photos.length > 0"
+        v-bind="editableAttrs(props.content._editable?.gallery)" />
       <ReviewsSection
         v-if="page.reviews.items.length > 0"
         v-bind="editableAttrs(props.content._editable?.reviews)" />
@@ -76,9 +78,7 @@ const accentStyle: ComputedRef<Record<string, string>> = computed((): Record<str
 }))
 
 useHead((): PageHead => {
-  const title: string = page.value.city
-    ? `${page.value.businessName}, électricien à ${page.value.city}`
-    : page.value.businessName
+  const title: string = `${page.value.businessName} · ${page.value.headline}`
   const description: string = page.value.hero.lead
   const meta: HeadMeta[] = [
     { name: 'description', content: description },

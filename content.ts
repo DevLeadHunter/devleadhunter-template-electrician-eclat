@@ -10,8 +10,7 @@ export const leanMockSiteContent: EclatSiteContentInput = {
   email: 'contact@martin-electricite.example',
   city: 'Rennes',
   area: 'Rennes et ses alentours',
-  subtitle:
-    'Dépannage, mise aux normes, rénovation et borne de recharge. Un travail propre, sécurisé et garanti à Rennes.',
+  subtitle: 'Dépannage, mise aux normes, tableau électrique, installation et rénovation à Rennes.',
 }
 
 /**
@@ -27,10 +26,10 @@ export const richMockSiteContent: EclatSiteContentInput = {
   reviewsCount: 48,
   palette: { primary: '#2f7de1', secondary: '#0b1b2e', accent: '#f59e0b' },
   trustItems: [
-    { value: '7j/7', label: 'Dépannage et urgences' },
     { value: '4,9/5', label: '48 avis' },
-    { value: 'Travail garanti', label: 'Interventions assurées' },
-    { value: '100% conforme', label: 'Installations aux normes' },
+    { value: 'Depuis 2012', label: 'Électricien à Rennes' },
+    { value: 'Tableaux', label: 'Pose et remplacement' },
+    { value: 'Rennes', label: 'Et ses alentours' },
   ],
   reviews: [
     {
