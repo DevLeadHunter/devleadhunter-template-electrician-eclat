@@ -75,6 +75,7 @@ import type { EclatPageContent } from '../../types/EclatPageContent'
 import { computed, onMounted, ref } from 'vue'
 import { ECLAT_MINIMUM_HERO_IMAGE_WIDTH } from '../../content/eclatDefaults'
 import { useEclatPage } from '../../content/eclatPage'
+import { withCityOnce } from '../../content/eclatText'
 import StarRating from '../parts/StarRating.vue'
 import SvgIcon from '../parts/SvgIcon.vue'
 
@@ -84,7 +85,7 @@ const heroImageElement: Ref<HTMLImageElement | null> = ref<HTMLImageElement | nu
 const isHeroImageTooSmall: Ref<boolean> = ref<boolean>(false)
 
 const badgeLine: ComputedRef<string> = computed((): string =>
-  page.value.city ? `${page.value.hero.badge} · ${page.value.city}` : page.value.hero.badge,
+  withCityOnce(page.value.hero.badge, page.value.city),
 )
 
 const ratingSource: ComputedRef<string> = computed((): string =>

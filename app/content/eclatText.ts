@@ -59,6 +59,20 @@ export function withoutLeadingArticle(city: string): string {
 }
 
 /**
+ * Ajoute la ville à un libellé, sauf s'il la nomme déjà (« Électricien à Gland » reste tel quel).
+ * @param label - Libellé, le plus souvent le métier.
+ * @param city - Ville de l'entreprise, vide si inconnue.
+ * @returns « libellé · ville », ou le libellé seul.
+ */
+export function withCityOnce(label: string, city: string): string {
+  const trimmedCity: string = city.trim()
+  const isCityInLabel: boolean = label
+    .toLocaleLowerCase('fr')
+    .includes(trimmedCity.toLocaleLowerCase('fr'))
+  return trimmedCity && !isCityInLabel ? `${label} · ${trimmedCity}` : label
+}
+
+/**
  * Initiales d'un auteur d'avis (deux lettres au plus).
  * @param author - Nom affiché de l'auteur.
  * @returns Les initiales en majuscules.

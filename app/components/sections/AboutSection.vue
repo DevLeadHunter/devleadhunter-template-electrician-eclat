@@ -59,13 +59,14 @@ import type { ComputedRef } from 'vue'
 import type { EclatPageContent } from '../../types/EclatPageContent'
 import { computed } from 'vue'
 import { useEclatPage } from '../../content/eclatPage'
+import { withCityOnce } from '../../content/eclatText'
 import { vEclatReveal } from '../../directives/vEclatReveal'
 import BrandMark from '../parts/BrandMark.vue'
 
 const page: ComputedRef<EclatPageContent> = useEclatPage()
 
 const brandCaption: ComputedRef<string> = computed((): string =>
-  page.value.city ? `${page.value.hero.badge} · ${page.value.city}` : page.value.hero.badge,
+  withCityOnce(page.value.hero.badge, page.value.city),
 )
 </script>
 
